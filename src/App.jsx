@@ -4,7 +4,7 @@ import Home from "./Componenets/Home"
 
 const App = () => {
   return (
-    <div>
+    <div className="m-auto">
       <Home />
     </div>
   )

@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react"
-import Card from "./Card"
+import { useEffect, useState } from "react";
+import Card from "./Card";
 
 const Home = () => {
-    const [cardWidth,setCardWidth] = useState(500)
+    const [cardWidth, setCardWidth] = useState(500);
     const cardsInRow = 5;
-    const [wrapperWidth,setWrapperWidth] = useState(cardWidth * cardsInRow);
-
-    const  [movie,setMovie] = useState([]);
-
+    const [wrapperWidth, setWrapperWidth] = useState(cardWidth * cardsInRow);
+    const [movies, setMovies] = useState([]); // ✅ Use plural name for clarity
 
     useEffect(() => {
         const getMovie = async () => {
@@ -19,34 +17,38 @@ const Home = () => {
                     'x-rapidapi-host': 'tvshow.p.rapidapi.com'
                 }
             };
-    
+
             try {
                 const response = await fetch(url, options);
-                const result = await response.text();
-                console.log(result);
-                setMovie(result)
+                const data = await response.json(); // ✅ Parse JSON, not text
+                console.log("Fetched Movies:", data);
+                
+                // ✅ Ensure `data` is an array before setting state
+                setMovies(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error(error);
-                alert(error)
+                alert("Failed to fetch movies.");
             }
         };
-    
-        getMovie(); // ✅ Call the function inside useEffect
-    }, []);
-    
 
-  return (
-        <div className='flex justify-center items-center' style={{width: wrapperWidth}} >
-        <div className="flex flex-wrap ">
-            {movie.map(({movie,i}) => {
-                
-            })}
-            <div>
-                <Card cardWidth={cardWidth}/>
+        getMovie();
+    }, []);
+
+    return (
+        <div className='flex justify-center items-center' style={{ width: wrapperWidth }} >
+            <div className="flex flex-wrap">
+                {movies.length > 0 ? (
+                    movies.map((movie, i) => ( // ✅ Correct `.map()`
+                        <div key={i}>
+                            <Card cardWidth={cardWidth} movie={movie} />
+                        </div>
+                    ))
+                ) : (
+                    <p>Loading movies...</p> // ✅ Show a loading message
+                )}
             </div>
         </div>
-    </div>
-  )
-}
+    );
+};
 
-export default Home
+export default Home;
