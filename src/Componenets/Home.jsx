@@ -5,7 +5,7 @@ const Home = () => {
     const [cardWidth, setCardWidth] = useState(500);
     const cardsInRow = 5;
     const [wrapperWidth, setWrapperWidth] = useState(cardWidth * cardsInRow);
-    const [movies, setMovies] = useState([]); // ✅ Use plural name for clarity
+    const [movies, setMovies] = useState([]);
 
     useEffect(() => {
         const getMovie = async () => {
@@ -20,10 +20,10 @@ const Home = () => {
 
             try {
                 const response = await fetch(url, options);
-                const data = await response.json(); // ✅ Parse JSON, not text
+                const data = await response.json(); 
                 console.log("Fetched Movies:", data);
                 
-                // ✅ Ensure `data` is an array before setting state
+                
                 setMovies(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error(error);
@@ -38,13 +38,13 @@ const Home = () => {
         <div className='flex justify-center items-center' style={{ width: wrapperWidth }} >
             <div className="flex flex-wrap">
                 {movies.length > 0 ? (
-                    movies.map((movie, i) => ( // ✅ Correct `.map()`
+                    movies.map((movie, i) => ( 
                         <div key={i}>
                             <Card cardWidth={cardWidth} movie={movie} />
                         </div>
                     ))
                 ) : (
-                    <p>Loading movies...</p> // ✅ Show a loading message
+                    <p>Loading movies...</p> 
                 )}
             </div>
         </div>
