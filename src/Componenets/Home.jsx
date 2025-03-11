@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Card from "./Card";
 
+
 const Home = () => {
     const [cardWidth, setCardWidth] = useState(500);
     const cardsInRow = 5;
@@ -35,6 +36,7 @@ const Home = () => {
     }, []);
 
     return (
+      <>
         <div className='flex justify-center items-center' style={{ width: wrapperWidth }} >
             <div className="flex flex-wrap">
                 {movies.length > 0 ? (
@@ -48,6 +50,7 @@ const Home = () => {
                 )}
             </div>
         </div>
+      </>
     );
 };
 
