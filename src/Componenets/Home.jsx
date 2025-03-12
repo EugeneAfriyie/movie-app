@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Card from "./Card";
+import Navigation from "./Navigation";
 
 
 const Home = () => {
@@ -37,6 +38,8 @@ const Home = () => {
 
     return (
       <>
+
+      <Navigation />
         <div className='flex justify-center items-center' style={{ width: wrapperWidth }} >
             <div className="flex flex-wrap">
                 {movies.length > 0 ? (
