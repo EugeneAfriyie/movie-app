@@ -101,9 +101,14 @@ const Home = () => {
             <div className="flex flex-wrap">
                 {movies.length > 0 ? (
                     movies.map((movie, i) => ( 
-                        <div key={i}>
+                        <motion.div 
+                             initial={{opacity:0}}
+                             animate={{opacity:1}}
+                             transition={{delay:i*0.05}}
+                             key={i}>
+
                             <Card cardWidth={cardWidth} movie={movie} />
-                        </div>
+                        </motion.div>
                     ))
                 ) : (
                     <p>Loading movies...</p> 
