@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Card from "./Card";
 import Navigation from "./Navigation";
-import { useMotionValue } from "framer-motion";
+import { useMotionValue, useTransform,motion, useSpring } from "framer-motion";
 
 
 const Home = () => {
@@ -18,7 +18,7 @@ const Home = () => {
         height:0
     })
 
-    const [windowWidth,setWindowWindth] = useState(window.innerWidth)
+    const [windowWidth,setWindowWidth] = useState(window.innerWidth)
     const [windowHeight,setWindowHeight] = useState(window.innerHeight)
 
     const cardRef = useRef(null); 
@@ -43,7 +43,13 @@ const Home = () => {
     const x = useMotionValue(0)
     const y = useMotionValue(0);
     x.set(mousePos.left)
-    y.set(mousePos.top)
+    y.set(mousePos.top);
+
+    const xSpring =useSpring(x,{stiffness:10,damping:10})
+    const ySpring =useSpring(y,{stiffness:10,damping:10})
+
+    const translateX = useTransform(xSpring,[0,windowWidth],[0,-mousePos.width + windowWidth])
+    const translateY = useTransform(ySpring,[0,windowHeight],[0,-mousePos.height + windowHeight])
 
     const apiKey = import.meta.env.VITE_API_KEY 
     const baseUrl = import.meta.env.VITE_BASE_URL 
@@ -76,13 +82,18 @@ const Home = () => {
         getMovie();
     }, [group,page]);
 
+    window.addEventListener('resize',() => {
+        setWindowWidth(window.innerWidth)
+        setWindowHeight(window.innerHeight)
+    })
+
     return (
       <>
 
       <Navigation page={page} setPage={setPage} setgroup={setgroup} />
-        <div 
-            className='flex justify-center items-center' 
-            style={{ width: wrapperWidth }} 
+        <motion.div 
+            className='flex justify-center items-center fixed top-0 left-0 overflow-hidden' 
+            style={{ width: wrapperWidth,translateX,translateY }} 
             ref={cardRef}
             onMouseMove={(e) => getMousePos(e,cardRef.current)}
             
@@ -98,7 +109,7 @@ const Home = () => {
                     <p>Loading movies...</p> 
                 )}
             </div>
-        </div>
+        </motion.div>
       </>
     );
 };

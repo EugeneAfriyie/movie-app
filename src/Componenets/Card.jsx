@@ -8,7 +8,7 @@ const Card = ({cardWidth,movie}) => {
 
     const {genres,releaseDate,originalLanguage,overview,title,image} = movie;
 
-    UseEdgeScroll()
+    // UseEdgeScroll()
 
 
 
