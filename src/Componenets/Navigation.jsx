@@ -41,7 +41,7 @@ const Navigation = ({ setPage, setgroup, page }) => {
       >
         <option value='TopRated'>Top Rated</option>
         <option value='Popular'>Popular</option>
-        <option value='Upcoming'>Upcoming</option>
+        <option value='UpComing'>Upcoming</option>
         <option value='Discover'>Discover</option>
       </select>
 

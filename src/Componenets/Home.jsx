@@ -20,6 +20,12 @@ const Home = () => {
 
     const [windowWidth,setWindowWidth] = useState(window.innerWidth)
     const [windowHeight,setWindowHeight] = useState(window.innerHeight)
+    
+
+
+
+
+    const [loading,setLoading] = useState(false)
 
     const cardRef = useRef(null); 
 
@@ -54,7 +60,11 @@ const Home = () => {
     const apiKey = import.meta.env.VITE_API_KEY 
     const baseUrl = import.meta.env.VITE_BASE_URL 
 
+    const abortControllerRef = useRef(null);
+
     useEffect(() => {
+        abortControllerRef.current != null && abortControllerRef.current.abort();
+        abortControllerRef.current = new AbortController()
         const getMovie = async () => {
             const url = `${baseUrl}/${group}?Page=${page}&Language=en-US&Adult=true`;
             const options = {
@@ -62,11 +72,12 @@ const Home = () => {
                 headers: {
                     'x-rapidapi-key': apiKey,
                     'x-rapidapi-host': 'tvshow.p.rapidapi.com'
-                }
+                },
+                signal: abortControllerRef.current != null && abortControllerRef.current.signal
             };
 
             try {
-                console.log('Fetching movies')
+                setLoading(true);
                 const response = await fetch(url, options);
                 const data = await response.json(); 
                 console.log("Fetched Movies:", data);
@@ -74,23 +85,67 @@ const Home = () => {
                 
                 setMovies(Array.isArray(data) ? data : []);
             } catch (error) {
+                if(error,name === 'AbortError'){
+                    console.log('Aborted')
+                    return
+                }
+
                 console.error(error);
-                alert("Failed to fetch movies.");
+                alert(error);
+            }finally{
+                setLoading(false)
             }
         };
 
         getMovie();
     }, [group,page]);
 
-    window.addEventListener('resize',() => {
-        setWindowWidth(window.innerWidth)
-        setWindowHeight(window.innerHeight)
-    })
+    useEffect(() =>{
+        const handleResize = () =>{
+            setWindowWidth(window.innerWidth)
+            setWindowHeight(window.innerHeight)
+
+            let newCardWidth = 500
+            if(window.innerWidth < 1280 ){
+                newCardWidth = 400
+            }
+            if(window.innerWidth < 766 ){
+                newCardWidth = 360
+            }
+
+            setCardWidth(newCardWidth)
+            setWrapperWidth(newCardWidth * cardsInRow)
+
+            x.set(mousePos.left)
+            y.set(mousePos.top)
+        }
+
+        window.addEventListener('resize',handleResize)
+        handleResize()
+
+        return () =>  window.removeEventListener('resize',handleResize)
+    },[])
+
+    useEffect( () =>{
+        x.set(0)
+        y.set(0)
+    },[windowHeight,windowWidth])
+
+
+
+
 
     return (
       <>
 
       <Navigation page={page} setPage={setPage} setgroup={setgroup} />
+
+       { loading === true ?
+        <div className="h-screen w-screen flex justify-center items-center ">
+            <h1 className="text-white text-4xl uppercase "> Loading.....</h1>
+           </div>
+       
+            :
         <motion.div 
             className='flex justify-center items-center fixed top-0 left-0 overflow-hidden' 
             style={{ width: wrapperWidth,translateX,translateY }} 
@@ -99,7 +154,7 @@ const Home = () => {
             
             >
             <div className="flex flex-wrap">
-                {movies.length > 0 ? (
+                {
                     movies.map((movie, i) => ( 
                         <motion.div 
                              initial={{opacity:0}}
@@ -109,12 +164,12 @@ const Home = () => {
 
                             <Card cardWidth={cardWidth} movie={movie} />
                         </motion.div>
-                    ))
-                ) : (
-                    <p>Loading movies...</p> 
+                    
+                ) 
                 )}
             </div>
         </motion.div>
+}
       </>
     );
 };
